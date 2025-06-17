@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Výsledok</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+
+    <link rel="stylesheet"  href="/styles.css">
+</head>
+<body>
+<header>
+<!--    <h1>Výsledok kontroly dostupnosti</h1>-->
+<!--    <h2 th:text="${product.title}">Názov produktu</h2>-->
+</header>
+
+    <a href="/check" class="button-link">Späť</a>
+
+        <div id="result"  th:if="${product}">
+            <div style="display: flex; justify-content: center; align-items: center; position: relative;">
+                <h2 th:text="${product.title}" style="flex-grow: 1; text-align: center;">Názov produktu</h2>
+                <a href="/check" class="button-link" style="position: absolute; right: 0; padding: 4px 8px; text-decoration: none; background-color: #007BFF; color: white; border-radius: 4px;">Späť</a>
+            </div>
+
+            <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" alt="Obrázok produktu" class="responsive-image">
+                <div style="display: flex; justify-content: space-between; width: 100%; max-width: 600px; margin-top: 20px;">
+                    <div style="padding-right: 40px;">
+                        <span th:text="${product.freeAmount + '/' + product.unpackedAmount + ' V'}"></span><br>
+                        <strong>Skalica stock:</strong>
+                    </div>
+                    <div>
+                        <span th:text="${product.centralStock}"></span><br>
+                        <strong>CentralStock:</strong>
+                    </div>
+                </div>
+            </div>
+            <p><strong>Cena:</strong> <span th:text="${product.price}"></span></p>
+            <p><strong>EAN:</strong> <span th:text="${product.ean}"></span></p>
+            <p><strong>Stav v Skalici:</strong> <span th:text="${product.stav}">Stav produktu</span></p>
+    <!--        <p><strong>Množstvo:</strong> <span th:text="${product.mnozstvo}">Množstvo</span></p>-->
+    <!--        <p><strong>Cena:</strong> <span th:text="${product.cena}">Cena</span></p>-->
+
+    <!--        <p><strong>Názov produktu:</strong> <span th:text="${product.title}"></span></p>-->
+    <!--        <p><strong>Stav v Skalici:</strong> <span th:text="${product.stav}"></span></p>-->
+            <p><strong>Zabalené kusy:</strong> <span th:text="${product.freeAmount}"></span></p>
+            <p><strong>Rozbalené kusy:</strong> <span th:text="${product.unpackedAmount}"></span></p>
+            <p><strong>Skalica stock:</strong> <span th:text="${product.freeAmount + '/' + product.unpackedAmount + ' V'}"></span></p>
+            <p><strong>Match ID:</strong> <span th:text="${product.match}"></span></p>
+            <p><strong>CentralStock:</strong> <span th:text="${product.centralStock}"></span></p>
+            <p><strong>URL produktu:</strong> <a th:href="${product.productUrl}" target="_blank" th:text="${product.productUrl}"></a></p> <!-- Updated line -->
+            <p><strong>EAN Barcode:</strong></p>
+            <svg id="barcode"></svg>
+        </div>
+
+        <div th:if="${error}">
+            <p th:text="${error}" style="color:red;"></p>
+        </div>
+
+    <a href="/check" class="button-link">Späť</a>
+
+    <button id="loadVariants">Zobraziť varianty</button>
+    <div id="variantsContainer"></div>
+
+
+<script th:inline="javascript">
+
+
+    $(document).ready(function() {
+        var ean = /*[[${product.ean}]]*/ '';
+        JsBarcode("#barcode", ean, {
+            format: "EAN13",
+            width: 4,
+            height: 100,
+            displayValue: true
+        });
+
+
+
+        $('#loadVariants').click(function() {
+            var productUrl = /*[[${product.productUrl}]]*/ '';
+            console.log("URL posílána na server: " + productUrl);
+            if (!productUrl) {
+                console.error("URL produktu je prázdná nebo nedefinovaná.");
+                alert("Prosím zadejte URL produktu.");
+                return;
+            }
+            $.ajax({
+                url: '/variants',
+                type: 'GET',
+                data: { url: productUrl },
+                success: function(variants) {
+                    var container = $('#variantsContainer');
+                    container.empty();
+                    if (variants.length > 0) {
+                        container.append('<h2>Varianty produktu:</h2>');
+                        variants.forEach(function(variant) {
+                            container.append(
+                                '<div class="variant-item">' +
+                                    '<a href="' + variant.link + '" target="_blank" class="variant-name">' + variant.name + '</a>' +
+                                    '<form action="/check" method="post" class="price-form">' +
+                                        '<input type="hidden" name="productUrl" value="' + variant.link + '">' +
+                                        '<button type="submit" class="price-button">' + variant.price + '</button>' +
+                                    '</form>' +
+                                '</div>'
+                            );
+                            container.append( '<div class="variant-item">' + '<p>Skalica stock: ' + variant.freeAmount + '/' + variant.unpackedAmount + ' V</p>'  + '</div>');
+                            container.append('<div class="variant-item">' + '<p>CentralStock: ' + variant.centralStock + '</p>' + '</div>');
+                        });
+                    } else {
+                        container.append('<h2>Žádné varianty nebyly nalezeny.</h2>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Chyba při načítání variant:", productUrl, error);
+                    alert("Chyba při načítání variant. Zkuste to prosím znovu.");
+                }
+            });
+        });
+    });
+</script>
+
+
+<a href="/check">Späť</a>
+</body>
+</html>
+

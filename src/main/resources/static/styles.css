@@ -1,0 +1,141 @@
+/* src/main/resources/static/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+    margin-bottom: 20px;
+}
+
+main {
+    padding: 1em;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button, .button-link {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+button:hover, .button-link:hover {
+    background-color: #45a049;
+}
+
+#result {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#result img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+#error {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+footer {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+
+.variant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 20px; /* adds horizontal padding from left and right */
+    padding-left: 10px; /* optional: extra left padding for better alignment */
+    padding-right: 10px; /* optional: extra right padding */
+    box-sizing: border-box;
+}
+
+.variant-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.price-form {
+    flex-shrink: 0;
+}
+
+.price-button {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+.responsive-image {
+            width: 400px; /* pevná šířka pro velké obrazovky */
+            height: auto;
+            max-width: 100%;
+        }
+
+        @media (max-width: 1024px) { /* tablet a menší */
+            .responsive-image {
+                width: 66%; /* zmenšení na 66% šířky obrazovky */
+            }
+        }
+
+        @media (max-width: 600px) { /* mobil */
+            .responsive-image {
+                width: 46%; /* ještě menší na mobilu */
+            }
+        }
+

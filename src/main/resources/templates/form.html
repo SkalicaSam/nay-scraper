@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>NAY Checker</title>
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+
+</head>
+<body>
+    <h1>Skontroluj dostupnosť v Skalici</h1>
+<!--    <form action="/check" method="post">-->
+<!--        <label for="productUrl">Zadaj URL produktu z nay.sk:</label><br>-->
+<!--        <input type="text" id="productUrl1" name="productUrl" size="80" required><br><br>-->
+<!--        <button type="submit">Skontrolovať</button>-->
+<!--    </form>-->
+
+    <form id="productForm" action="/check" method="post">
+        <label for="productUrl">Zadaj URL produktu z nay.sk alebo naskenuj čiarový kód:</label><br>
+        <input type="text" id="productUrl" name="productUrl" size="80" required><br><br>
+        <button type="submit">Skontrolovať</button>
+    </form>
+
+    <div>
+        <button id="startScanner">Skenovať čiarový kód</button>
+        <div id="scanner-container" style="width: 400px; height: 300px;"></div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Quagga.init({
+                inputStream : {
+                    name : "Live",
+                    type : "LiveStream",
+                    target: document.querySelector('#scanner-container'),
+                    constraints: {
+                        facingMode: "environment"
+                    }
+                },
+                decoder : {
+                    readers : ["ean_reader", "ean_8_reader"]
+                },
+                locate: true
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                console.log("Quagga initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            let lastCode = null;
+            Quagga.onDetected(function(result) {
+                var code = result.codeResult.code;
+                if (code !== lastCode) {
+                    lastCode = code;
+                    console.log("Detected code: " + code);
+                    document.getElementById('productUrl').value = "https://www.nay.sk/search?q=" + code;
+                    Quagga.stop();
+                    document.getElementById('productForm').submit();
+                }
+            });
+        });
+    </script>
+<!--    <script>-->
+<!--        document.getElementById('startScanner').addEventListener('click', function() {-->
+<!--            Quagga.init({-->
+<!--                inputStream : {-->
+<!--                    name : "Live",-->
+<!--                    type : "LiveStream",-->
+<!--                    target: document.querySelector('#scanner-container'),-->
+<!--                    constraints: {-->
+<!--                        facingMode: "environment"-->
+<!--                    }-->
+<!--                },-->
+<!--                decoder : {-->
+<!--                    readers : ["ean_reader", "ean_8_reader"]-->
+<!--                },-->
+<!--                locate: true-->
+<!--            }, function(err) {-->
+<!--                if (err) {-->
+<!--                    console.error(err);-->
+<!--                    return;-->
+<!--                }-->
+<!--                console.log("Quagga initialization finished. Ready to start");-->
+<!--                Quagga.start();-->
+<!--            });-->
+
+<!--            let lastCode = null;-->
+<!--            Quagga.onDetected(function(result) {-->
+<!--                var code = result.codeResult.code;-->
+<!--                if (code !== lastCode) { // zabrání opakovanému odeslání-->
+<!--                    lastCode = code;-->
+<!--                    console.log("Detected code: " + code);-->
+<!--                    document.getElementById('productUrl').value = "https://www.nay.sk/search?q=" + code;-->
+<!--                    Quagga.stop();-->
+<!--                    document.getElementById('productForm').submit();-->
+<!--                }-->
+<!--            });-->
+
+<!--            Quagga.onProcessed(function(result) {-->
+<!--                // Můžete sem přidat vizuální indikaci, pokud chcete-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
+
+</body>
+</html>
